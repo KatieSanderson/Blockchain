@@ -16,7 +16,7 @@ public class Main implements AutoCloseable {
     }
 
     public static void main(String[] args) throws IOException {
-        String filePath = "src\\blockchain\\blockchain.txt";
+        String filePath = "src\\main\\resources\\blockchain.txt";
         File file = new File(filePath);
         if (!file.exists()) {
             file.createNewFile();
