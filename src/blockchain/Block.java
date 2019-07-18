@@ -42,6 +42,6 @@ public class Block {
                 "Magic number: " + magicNumber + "\n" +
                 "Hash of the previous block: \n" + previousBlockHash + "\n" +
                 "Hash of the block: \n" + currentBlockHash + "\n" +
-                "Block was generating for " + (endTimestamp - startTimestamp)/1000 + "seconds";
+                "Block was generating for " + (endTimestamp - startTimestamp)/1000 + " seconds";
     }
 }
