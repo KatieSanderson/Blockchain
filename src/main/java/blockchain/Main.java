@@ -10,7 +10,7 @@ public class Main implements AutoCloseable {
     private final ObjectOutputStream outputStream;
     private Blockchain blockchain;
 
-    Main (ObjectInputStream inputStream, ObjectOutputStream outputStream) {
+    private Main(ObjectInputStream inputStream, ObjectOutputStream outputStream) {
         scanner = new Scanner(System.in);
         this.inputStream = inputStream;
         this.outputStream = outputStream;
@@ -25,7 +25,7 @@ public class Main implements AutoCloseable {
             if (inputStream != null) {
                 main.loadFile();
             } else {
-                System.out.print("Enter how many zeros the hash must starts with: ");
+                System.out.print("Enter how many zeroes the hash must starts with: ");
                 int numHashZeroes = Integer.parseInt(main.scanner.nextLine());
                 main.blockchain = new Blockchain(numHashZeroes);
             }
@@ -41,12 +41,14 @@ public class Main implements AutoCloseable {
 
     private void writeToFile() throws IOException {
         System.out.println("Writing to file");
-        outputStream.writeObject(blockchain);
+        outputStream.writeObject("Hello World");
+//        outputStream.writeObject(blockchain);
 //        outputStream.flush();
     }
 
     private void loadFile() throws IOException, ClassNotFoundException {
-        blockchain = (Blockchain) inputStream.readObject();
+//        blockchain = (Blockchain) inputStream.readObject();
+        System.out.println((String) inputStream.readObject());
         if (!blockchain.validate()) {
             throw new IllegalStateException("Blockchain is not valid.");
         }

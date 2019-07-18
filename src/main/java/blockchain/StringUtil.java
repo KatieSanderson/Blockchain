@@ -12,7 +12,7 @@ class StringUtil {
 
             String uncheckedHash = "";
             int magicNumber = random.nextInt(Integer.MAX_VALUE);
-            while (!isValidZeroes(uncheckedHash, numHashZeroes)) {
+            do {
                 String inputTo256 = input + magicNumber;
                 byte[] hash = digest.digest(inputTo256.getBytes(StandardCharsets.UTF_8));
                 StringBuilder hexString = new StringBuilder();
@@ -26,7 +26,7 @@ class StringUtil {
 
                 uncheckedHash = hexString.toString();
                 magicNumber = random.nextInt(Integer.MAX_VALUE);
-            }
+            } while (!isValidZeroes(uncheckedHash, numHashZeroes));
             return new SHA256Output(magicNumber, uncheckedHash);
         }
         catch(Exception e) {
