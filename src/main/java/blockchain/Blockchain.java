@@ -1,9 +1,10 @@
 package blockchain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Blockchain {
+public class Blockchain implements Serializable {
 
     final private List<Block> blocks;
     final private int numHashZeroes;

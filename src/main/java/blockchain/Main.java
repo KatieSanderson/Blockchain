@@ -23,6 +23,7 @@ public class Main implements AutoCloseable {
         }
 
         try (Main main = new Main(new BufferedReader(new FileReader(file)), new FileWriter(file))) {
+            main.loadFile();
             System.out.print("Enter how many zeros the hash must starts with: ");
             int numHashZeroes = Integer.parseInt(main.scanner.nextLine());
             Blockchain blockchain = new Blockchain(numHashZeroes);
@@ -34,6 +35,10 @@ public class Main implements AutoCloseable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void loadFile() {
+
     }
 
     @Override
