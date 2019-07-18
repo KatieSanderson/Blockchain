@@ -7,34 +7,41 @@ public class Block {
     private int id;
     private String previousBlockHash;
     private String currentBlockHash;
-    private long timeStamp;
+    private int magicNumber;
+    private long startTimestamp;
+    private long endTimestamp;
 
-    Block(String previousBlockHash, int id) {
+    Block(String previousBlockHash, int id, int numHashZeroes) {
+        startTimestamp = new Date().getTime();
         this.id = id;
         this.previousBlockHash = previousBlockHash;
-        currentBlockHash = StringUtil.applySha256(previousBlockHash + timeStamp);
-        timeStamp = new Date().getTime();
+        SHA256Output output = StringUtil.applySha256(previousBlockHash + startTimestamp, numHashZeroes);
+        currentBlockHash = output.getHash();
+        magicNumber = output.getMagicNumber();
         // 1539795682545 represents 17.10.2018, 20:01:22.545
+        endTimestamp = new Date().getTime();
     }
 
-    public int getId() {
+    int getId() {
         return id;
     }
 
-    public String getPreviousBlockHash() {
+    String getPreviousBlockHash() {
         return previousBlockHash;
     }
 
-    public String getCurrentBlockHash() {
+    String getCurrentBlockHash() {
         return currentBlockHash;
     }
 
     @Override
     public String toString() {
-        return "blockchain.Block: \n" +
+        return "Block: \n" +
                 "Id: " + id + "\n" +
-                "Timestamp: " + timeStamp + "\n" +
+                "Timestamp: " + startTimestamp + "\n" +
+                "Magic number: " + magicNumber + "\n" +
                 "Hash of the previous block: \n" + previousBlockHash + "\n" +
-                "Hash of the block: \n" + currentBlockHash + "\n";
+                "Hash of the block: \n" + currentBlockHash + "\n" +
+                "Block was generating for " + (endTimestamp - startTimestamp)/1000 + "seconds";
     }
 }
