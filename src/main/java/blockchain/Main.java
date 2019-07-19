@@ -13,7 +13,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        String filePath = "src\\main\\resources\\blockchain.txt";
+        String filePath = "blockchain.txt";
         File file = new File(filePath);
 
         try (Scanner scanner = new Scanner(System.in)) {
@@ -21,27 +21,26 @@ public class Main {
             if (file.exists()) {
                 main.loadFile();
             } else {
-                System.out.print("Enter how many zeroes the hash must starts with: ");
-                int numHashZeroes = Integer.parseInt(scanner.nextLine());
-                main.blockchain = new Blockchain(numHashZeroes);
+                main.blockchain = new Blockchain();
             }
-            main.generateBlocks(5);
+            System.out.print("Enter how many zeros the hash must starts with: ");
+            main.blockchain.setNumHashZeroes(Integer.parseInt(scanner.nextLine()));
+            System.out.println();
+            for (int blockCount = main.blockchain.blockCount(); blockCount < 5; blockCount++) {
+                main.blockchain.generateBlock();
+            }
             main.writeToFile();
             System.out.println(main.blockchain.toString());
+            file.delete();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private void generateBlocks(int blockCount) {
-        for (int i = 0; i < blockCount; i++) {
-            blockchain.generateBlock();
         }
     }
 
     private void writeToFile() throws IOException {
         ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
         outputStream.writeObject(blockchain);
+        outputStream.close();
     }
 
     private void loadFile() throws IOException, ClassNotFoundException {
@@ -50,5 +49,6 @@ public class Main {
         if (!blockchain.validate()) {
             throw new IllegalStateException("Blockchain is not valid.");
         }
+        inputStream.close();
     }
 }

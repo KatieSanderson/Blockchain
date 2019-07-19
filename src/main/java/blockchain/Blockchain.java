@@ -7,11 +7,10 @@ import java.util.List;
 public class Blockchain implements Serializable {
 
     final private List<Block> blocks;
-    final private int numHashZeroes;
+    private int numHashZeroes;
 
-    Blockchain(int numHashZeroes) {
+    Blockchain() {
         this.blocks = new ArrayList<>();
-        this.numHashZeroes = numHashZeroes;
     }
 
     void generateBlock() {
@@ -24,7 +23,7 @@ public class Blockchain implements Serializable {
         }
     }
 
-    public boolean validate() {
+    boolean validate() {
         for (int i = 1; i < blocks.size(); i++) {
             if (!blocks.get(i).getPreviousBlockHash().equals(blocks.get(i - 1).getCurrentBlockHash())) {
                 return false;
@@ -40,5 +39,19 @@ public class Blockchain implements Serializable {
             stringBuilder.append(block).append("\n").append("\n");
         }
         return stringBuilder.toString();
+    }
+
+    void generateBlocks(int blockCount) {
+        for (int i = 0; i < blockCount; i++) {
+            generateBlock();
+        }
+    }
+
+    int blockCount() {
+        return blocks.size();
+    }
+
+    void setNumHashZeroes(int numHashZeroes) {
+        this.numHashZeroes = numHashZeroes;
     }
 }
