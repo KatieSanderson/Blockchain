@@ -3,35 +3,29 @@ package blockchain;
 import java.io.*;
 import java.util.Scanner;
 
-public class Main implements AutoCloseable {
+public class Main {
 
-    private final Scanner scanner;
-    private final ObjectInputStream inputStream;
-    private final ObjectOutputStream outputStream;
+    private File file;
     private Blockchain blockchain;
 
-    private Main(ObjectInputStream inputStream, ObjectOutputStream outputStream) {
-        scanner = new Scanner(System.in);
-        this.inputStream = inputStream;
-        this.outputStream = outputStream;
+    private Main(File file) {
+        this.file = file;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         String filePath = "src\\main\\resources\\blockchain.txt";
         File file = new File(filePath);
-        ObjectInputStream inputStream = file.createNewFile() ? null : new ObjectInputStream(new FileInputStream(file));
 
-        try (Main main = new Main(inputStream, new ObjectOutputStream(new FileOutputStream(file)))) {
-            if (inputStream != null) {
+        try (Scanner scanner = new Scanner(System.in)) {
+            Main main = new Main(file);
+            if (file.exists()) {
                 main.loadFile();
             } else {
                 System.out.print("Enter how many zeroes the hash must starts with: ");
-                int numHashZeroes = Integer.parseInt(main.scanner.nextLine());
+                int numHashZeroes = Integer.parseInt(scanner.nextLine());
                 main.blockchain = new Blockchain(numHashZeroes);
             }
-            for (int i = 0; i < 5; i++) {
-                main.blockchain.generateBlock();
-            }
+            main.generateBlocks(5);
             main.writeToFile();
             System.out.println(main.blockchain.toString());
         } catch (Exception e) {
@@ -39,27 +33,22 @@ public class Main implements AutoCloseable {
         }
     }
 
+    private void generateBlocks(int blockCount) {
+        for (int i = 0; i < blockCount; i++) {
+            blockchain.generateBlock();
+        }
+    }
+
     private void writeToFile() throws IOException {
-        System.out.println("Writing to file");
-        outputStream.writeObject("Hello World");
-//        outputStream.writeObject(blockchain);
-//        outputStream.flush();
+        ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
+        outputStream.writeObject(blockchain);
     }
 
     private void loadFile() throws IOException, ClassNotFoundException {
-//        blockchain = (Blockchain) inputStream.readObject();
-        System.out.println((String) inputStream.readObject());
+        ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(file));
+        blockchain = (Blockchain) inputStream.readObject();
         if (!blockchain.validate()) {
             throw new IllegalStateException("Blockchain is not valid.");
         }
-    }
-
-    @Override
-    public void close() throws Exception {
-        scanner.close();
-        if (inputStream != null) {
-            inputStream.close();
-        }
-        outputStream.close();
     }
 }
