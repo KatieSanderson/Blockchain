@@ -20,7 +20,7 @@ public class Block implements Serializable {
         this.id = id;
         this.numHashZeroes = numHashZeroes;
         this.minerId = minerId;
-        SHA256Output output = StringUtil.applySha256(previousBlockHash + startTimestamp, numHashZeroes);
+        SHA256Output output = StringUtil.applySha256(previousBlockHash, numHashZeroes);
         currentBlockHash = output.getHash();
         magicNumber = output.getMagicNumber();
         // 1539795682545 represents 17.10.2018, 20:01:22.545
@@ -39,6 +39,10 @@ public class Block implements Serializable {
         return currentBlockHash;
     }
 
+    long getGenerationTime() {
+        return (endTimestamp - startTimestamp) / 1000;
+    }
+
     @Override
     public String toString() {
         return "Block: \n" +
@@ -48,6 +52,6 @@ public class Block implements Serializable {
                 "Magic number: " + magicNumber + "\n" +
                 "Hash of the previous block: \n" + previousBlockHash + "\n" +
                 "Hash of the block: \n" + currentBlockHash + "\n" +
-                "Block was generating for " + (endTimestamp - startTimestamp)/1000 + " seconds";
+                "Block was generating for " + getGenerationTime() + " seconds";
     }
 }

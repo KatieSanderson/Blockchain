@@ -27,6 +27,7 @@ class StringUtil {
                 uncheckedHash = hexString.toString();
                 magicNumber = random.nextInt(Integer.MAX_VALUE);
             } while (!isValidZeroes(uncheckedHash, numHashZeroes));
+//            System.out.println("Found magic number");
             return new SHA256Output(magicNumber, uncheckedHash);
         }
         catch(Exception e) {

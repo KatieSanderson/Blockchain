@@ -1,7 +1,6 @@
 package blockchain;
 
 import java.io.*;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,34 +16,39 @@ public class Main {
             loadFile();
         } else {
             blockchain = new Blockchain();
-            blockchain.setNumHashZeroes(0);
         }
         executor = Executors.newFixedThreadPool(5);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         String filePath = "blockchain.txt";
         File file = new File(filePath);
+        Main main = new Main(file);
 
-        try (Scanner scanner = new Scanner(System.in)) {
-            Main main = new Main(file);
-//            System.out.print("Enter how many zeros the hash must starts with: ");
-//            main.blockchain.setNumHashZeroes(Integer.parseInt(scanner.nextLine()));
-//            System.out.println();
-            for (int blockCount = main.blockchain.blockCount(); blockCount < 5; blockCount++) {
-                System.out.println("Generating block " + blockCount);
-                for (int i = 0; i < 10; i++) {
-                    main.executor.submit(new Miner(main.blockchain, i));
+        for (int blockCount = main.blockchain.blockCount(); blockCount < 5; blockCount++) {
+            Block block = main.blockchain.getLastBlock();
+            for (int i = 0; i < 10; i++) {
+                main.executor.submit(new Miner(main.blockchain, block, i));
+            }
+
+            synchronized (main.blockchain) {
+                while (block == main.blockchain.getLastBlock()) {
+                    try {
+                        main.blockchain.wait();
+                    } catch (InterruptedException e) {
+                        // treat interrupt as exit request
+                        break;
+                    }
+                    System.out.println(main.blockchain.getLastBlock());
+                    System.out.println(main.blockchain.updateNumHashZeroes());
+                    System.out.println("\n");
                 }
             }
-            main.executor.shutdown();
-
-            main.writeToFile();
-            System.out.println(main.blockchain.toString());
-            file.delete();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        main.executor.shutdown();
+        main.writeToFile();
+        file.delete();
     }
 
     private void writeToFile() throws IOException {
