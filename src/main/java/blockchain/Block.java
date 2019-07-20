@@ -8,14 +8,18 @@ public class Block implements Serializable {
     private int id;
     private String previousBlockHash;
     private String currentBlockHash;
+    private int numHashZeroes;
+    private int minerId;
     private int magicNumber;
     private long startTimestamp;
     private long endTimestamp;
 
-    Block(String previousBlockHash, int id, int numHashZeroes) {
+    Block(String previousBlockHash, int id, int numHashZeroes, int minerId) {
         startTimestamp = new Date().getTime();
-        this.id = id;
         this.previousBlockHash = previousBlockHash;
+        this.id = id;
+        this.numHashZeroes = numHashZeroes;
+        this.minerId = minerId;
         SHA256Output output = StringUtil.applySha256(previousBlockHash + startTimestamp, numHashZeroes);
         currentBlockHash = output.getHash();
         magicNumber = output.getMagicNumber();
@@ -38,6 +42,7 @@ public class Block implements Serializable {
     @Override
     public String toString() {
         return "Block: \n" +
+                "Created by miner # " + minerId + "\n" +
                 "Id: " + id + "\n" +
                 "Timestamp: " + startTimestamp + "\n" +
                 "Magic number: " + magicNumber + "\n" +

@@ -13,23 +13,33 @@ public class Blockchain implements Serializable {
         this.blocks = new ArrayList<>();
     }
 
-    void generateBlock() {
-        if (blocks.size() > 0) {
-            Block previousBlock = blocks.get(blocks.size() - 1);
-            blocks.add(new Block(previousBlock.getCurrentBlockHash(), previousBlock.getId() + 1, numHashZeroes));
-        } else {
-            // first block's previous hash is 0
-            blocks.add(new Block("0", 1, numHashZeroes));
-        }
-    }
-
-    boolean validate() {
+    boolean validateBlockchain() {
         for (int i = 1; i < blocks.size(); i++) {
-            if (!blocks.get(i).getPreviousBlockHash().equals(blocks.get(i - 1).getCurrentBlockHash())) {
+            if (!isValidNextBlock(blocks.get(i), blocks.get(i - 1))) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean isValidNextBlock(Block previousBlock, Block newBlock) {
+        return newBlock.getPreviousBlockHash().equals(previousBlock.getCurrentBlockHash());
+    }
+
+    int blockCount() {
+        return blocks.size();
+    }
+
+    void setNumHashZeroes(int numHashZeroes) {
+        this.numHashZeroes = numHashZeroes;
+    }
+
+    List<Block> getBlocks() {
+        return blocks;
+    }
+
+    int getNumHashZeroes() {
+        return numHashZeroes;
     }
 
     @Override
@@ -41,17 +51,11 @@ public class Blockchain implements Serializable {
         return stringBuilder.toString();
     }
 
-    void generateBlocks(int blockCount) {
-        for (int i = 0; i < blockCount; i++) {
-            generateBlock();
+    synchronized boolean addBlock(Block minedBlock) {
+        if (isValidNextBlock(blocks.get(blocks.size() - 1), minedBlock)) {
+            blocks.add(minedBlock);
+            return true;
         }
-    }
-
-    int blockCount() {
-        return blocks.size();
-    }
-
-    void setNumHashZeroes(int numHashZeroes) {
-        this.numHashZeroes = numHashZeroes;
+        return false;
     }
 }
