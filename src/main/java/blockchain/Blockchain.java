@@ -84,6 +84,12 @@ public class Blockchain implements Serializable {
         return numHashZeroes;
     }
 
+    void addMessageToBlockchain(Message message) {
+        synchronized (messages) {
+            messages.add(message);
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();

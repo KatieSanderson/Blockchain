@@ -1,14 +1,14 @@
 package blockchain;
 
-class Message {
+import java.io.Serializable;
+
+class Message implements Serializable {
 
     private final String fromUser;
-    private final String toUser;
     private final String messageContent;
 
-    Message(String fromUser, String toUser, String messageContent) {
+    Message(String fromUser, String messageContent) {
         this.fromUser = fromUser;
-        this.toUser = toUser;
         this.messageContent = messageContent;
     }
 
@@ -16,11 +16,12 @@ class Message {
         return fromUser;
     }
 
-    String getToUser() {
-        return toUser;
-    }
-
     String getMessageContent() {
         return messageContent;
+    }
+
+    @Override
+    public String toString() {
+        return fromUser + ": " + messageContent;
     }
 }

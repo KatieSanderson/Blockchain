@@ -8,7 +8,8 @@ public class Main {
 
     private File file;
     private Blockchain blockchain;
-    private ExecutorService executor;
+    private ExecutorService minersExecutor;
+    private ExecutorService usersExecutor;
 
     private Main(File file) throws IOException, ClassNotFoundException {
         this.file = file;
@@ -17,7 +18,8 @@ public class Main {
         } else {
             blockchain = new Blockchain();
         }
-        executor = Executors.newFixedThreadPool(5);
+        minersExecutor = Executors.newFixedThreadPool(5);
+        usersExecutor = Executors.newFixedThreadPool(5);
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -28,9 +30,12 @@ public class Main {
         for (int blockCount = main.blockchain.getBlockCount(); blockCount < 5; blockCount++) {
             Block block = main.blockchain.getLastBlock();
             for (int i = 0; i < 10; i++) {
-                main.executor.submit(new Miner(main.blockchain, block, i, main.blockchain.getBlockMessages()));
+                main.minersExecutor.submit(new Miner(main.blockchain, block, i, main.blockchain.getBlockMessages()));
             }
-
+            String[] users = {"Katie", "Bradley", "Mandy", "Jeremy"};
+            for (String user : users) {
+                main.usersExecutor.submit(new User(user, new String[]{"Message 1", "Message 2", "Message 3"}, main.blockchain));
+            }
             synchronized (main.blockchain) {
                 while (block == main.blockchain.getLastBlock()) {
                     try {
@@ -39,14 +44,14 @@ public class Main {
                         // treat interrupt as exit request
                         break;
                     }
-                    System.out.println(main.blockchain.getLastBlock());
-                    System.out.println(main.blockchain.updateNumHashZeroes());
-                    System.out.println("\n");
                 }
+                System.out.println(main.blockchain.getLastBlock() + "\n" +
+                        main.blockchain.updateNumHashZeroes() + "\n");
             }
         }
 
-        main.executor.shutdown();
+        main.usersExecutor.shutdown();
+        main.minersExecutor.shutdown();
         main.writeToFile();
         file.delete();
     }

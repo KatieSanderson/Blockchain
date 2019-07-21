@@ -48,11 +48,12 @@ public class Block implements Serializable {
 
     private String messagesToString() {
         if (messages.size() < 1) {
-            return "no messages";
+            return "no messages \n";
         } else {
             StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("\n");
             for (Message message : messages) {
-                stringBuilder.append(message.getFromUser()).append(": ").append(message.getMessageContent());
+                stringBuilder.append(message).append("\n");
             }
             return stringBuilder.toString();
         }
@@ -67,7 +68,7 @@ public class Block implements Serializable {
                 "Magic number: " + magicNumber + "\n" +
                 "Hash of the previous block: \n" + previousBlockHash + "\n" +
                 "Hash of the block: \n" + currentBlockHash + "\n" +
-                "Block data: " + messagesToString() + "\n" +
+                "Block data: " + messagesToString() +
                 "Block was generating for " + getGenerationTime() + " seconds";
     }
 }
