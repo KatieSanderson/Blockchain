@@ -6,11 +6,13 @@ import java.util.List;
 
 public class Blockchain implements Serializable {
 
-    final private List<Block> blocks;
+    private final List<Block> blocks;
+    private final List<Message> messages;
     private int numHashZeroes;
 
     Blockchain() {
         this.blocks = new ArrayList<>();
+        this.messages = new ArrayList<>();
         numHashZeroes = 0;
     }
 
@@ -26,36 +28,11 @@ public class Blockchain implements Serializable {
     private boolean isValidNextBlock(Block previousBlock, Block newBlock) {
         return newBlock.getPreviousBlockHash().equals(previousBlock.getCurrentBlockHash());
     }
-
-    int blockCount() {
-        return blocks.size();
-    }
-
-    List<Block> getBlocks() {
-        return blocks;
-    }
-
-    Block getLastBlock() {
-        return blocks.size() > 0 ? blocks.get(blocks.size() - 1) : null;
-    }
-
-    int getNumHashZeroes() {
-        return numHashZeroes;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Block block : blocks) {
-            stringBuilder.append(block).append("\n").append("\n");
-        }
-        return stringBuilder.toString();
-    }
-
     synchronized boolean validateBlock(Block minedBlock) {
         if ((blocks.size() < 1 || isValidNextBlock(blocks.get(blocks.size() - 1), minedBlock)) && containsValidZeroes(minedBlock)) {
             blocks.add(minedBlock);
-            this.notifyAll();
+            // notifies main thread to stop other threads
+            notifyAll();
             return true;
         }
         return false;
@@ -82,4 +59,38 @@ public class Blockchain implements Serializable {
             return "N stays the same";
         }
     }
+
+    List<Message> getBlockMessages() {
+        synchronized (messages) {
+            List<Message> messagesForBlock = new ArrayList<>(messages);
+            messages.clear();
+            return messagesForBlock;
+        }
+    }
+
+    int getBlockCount() {
+        return blocks.size();
+    }
+
+    List<Block> getBlocks() {
+        return blocks;
+    }
+
+    Block getLastBlock() {
+        return blocks.size() > 0 ? blocks.get(blocks.size() - 1) : null;
+    }
+
+    int getNumHashZeroes() {
+        return numHashZeroes;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Block block : blocks) {
+            stringBuilder.append(block).append("\n").append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
 }

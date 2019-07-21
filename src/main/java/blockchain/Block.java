@@ -2,6 +2,7 @@ package blockchain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class Block implements Serializable {
 
@@ -13,13 +14,15 @@ public class Block implements Serializable {
     private int magicNumber;
     private long startTimestamp;
     private long endTimestamp;
+    private final List<Message> messages;
 
-    Block(String previousBlockHash, int id, int numHashZeroes, int minerId) {
+    Block(String previousBlockHash, int id, int numHashZeroes, int minerId, List<Message> messages) {
         startTimestamp = new Date().getTime();
         this.previousBlockHash = previousBlockHash;
         this.id = id;
         this.numHashZeroes = numHashZeroes;
         this.minerId = minerId;
+        this.messages = messages;
         SHA256Output output = StringUtil.applySha256(previousBlockHash, numHashZeroes);
         currentBlockHash = output.getHash();
         magicNumber = output.getMagicNumber();
@@ -43,6 +46,18 @@ public class Block implements Serializable {
         return (endTimestamp - startTimestamp) / 1000;
     }
 
+    private String messagesToString() {
+        if (messages.size() < 1) {
+            return "no messages";
+        } else {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Message message : messages) {
+                stringBuilder.append(message.getFromUser()).append(": ").append(message.getMessageContent());
+            }
+            return stringBuilder.toString();
+        }
+    }
+
     @Override
     public String toString() {
         return "Block: \n" +
@@ -52,6 +67,7 @@ public class Block implements Serializable {
                 "Magic number: " + magicNumber + "\n" +
                 "Hash of the previous block: \n" + previousBlockHash + "\n" +
                 "Hash of the block: \n" + currentBlockHash + "\n" +
+                "Block data: " + messagesToString() + "\n" +
                 "Block was generating for " + getGenerationTime() + " seconds";
     }
 }

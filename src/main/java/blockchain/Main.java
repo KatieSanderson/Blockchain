@@ -25,10 +25,10 @@ public class Main {
         File file = new File(filePath);
         Main main = new Main(file);
 
-        for (int blockCount = main.blockchain.blockCount(); blockCount < 5; blockCount++) {
+        for (int blockCount = main.blockchain.getBlockCount(); blockCount < 5; blockCount++) {
             Block block = main.blockchain.getLastBlock();
             for (int i = 0; i < 10; i++) {
-                main.executor.submit(new Miner(main.blockchain, block, i));
+                main.executor.submit(new Miner(main.blockchain, block, i, main.blockchain.getBlockMessages()));
             }
 
             synchronized (main.blockchain) {
